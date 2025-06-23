@@ -579,6 +579,12 @@ export default function () {
                       className="btn btn-primary join-item btn-wide"
                       disabled={disabled || !!state.appStatus}
                       onClick={() => {
+                        if (spotlight.games.length > 1) {
+                          return api.window.send<ModalRequest>(Constants.WindowIdentifier.Modal, {
+                            target: '/play',
+                            payload: spotlight.id,
+                          });
+                        }
                         setPlaying(true);
                         Util.sleep(GAME_LAUNCH_DELAY)
                           .then(api.play.start)
