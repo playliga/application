@@ -1502,6 +1502,36 @@ export const SponsorContract: Record<
 };
 
 /**
+ * Match config for tiers such as
+ * the number of games per match.
+ *
+ * The array index represents the round
+ * counting back from the grand-final.
+ *
+ * For example, an array of `[7, 5, 3]`:
+ * - grand-final is bo7
+ * - semi-final is bo5
+ * - quarter-final is bo3
+ *
+ * @constant
+ */
+export const TierMatchConfig = {
+  [TierSlug.CIRCUIT_PLAYOFFS]: [3, 3],
+  [TierSlug.ESWC_PLAYOFFS]: [5, 3],
+  [TierSlug.LEAGUE_ADVANCED_PLAYOFFS]: [3, 3],
+  [TierSlug.LEAGUE_CUP]: [3, 3],
+  [TierSlug.LEAGUE_INTERMEDIATE_PLAYOFFS]: [3, 3],
+  [TierSlug.LEAGUE_MAIN_PLAYOFFS]: [3, 3],
+  [TierSlug.LEAGUE_OPEN_PLAYOFFS]: [3, 3],
+  [TierSlug.LEAGUE_PREMIER_PLAYOFFS]: [3, 3],
+  [TierSlug.SPONSORS_BLUEQUIL]: [3, 3],
+  [TierSlug.SPONSORS_HEAVENCASE]: [3, 3],
+  [TierSlug.SPONSORS_NINEKBET]: [3, 3],
+  [TierSlug.SPONSORS_SKINARCH]: [3, 3],
+  [TierSlug.SPONSORS_WHITE_WOLF]: [3, 3],
+};
+
+/**
  * Promotion and relegation zones per tier.
  *
  * @constant
