@@ -1515,7 +1515,7 @@ export const SponsorContract: Record<
  *
  * @constant
  */
-export const TierMatchConfig = {
+export const TierMatchConfig: Record<string, Array<number>> = {
   [TierSlug.CIRCUIT_PLAYOFFS]: [3, 3],
   [TierSlug.ESWC_PLAYOFFS]: [5, 3],
   [TierSlug.LEAGUE_ADVANCED_PLAYOFFS]: [3, 3],
