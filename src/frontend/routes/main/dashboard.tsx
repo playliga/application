@@ -15,6 +15,7 @@ import {
   FaCalendarDay,
   FaChartBar,
   FaCloudMoon,
+  FaCog,
   FaExclamationTriangle,
   FaForward,
   FaMapSigns,
@@ -561,6 +562,19 @@ export default function () {
                     </aside>
                   </header>
                   <footer className="join justify-center">
+                    <button
+                      title={t('main.dashboard.matchSetup')}
+                      className="btn join-item"
+                      disabled={disabled || !!state.appStatus}
+                      onClick={() =>
+                        api.window.send<ModalRequest>(Constants.WindowIdentifier.Modal, {
+                          target: '/pregame',
+                          payload: spotlight.id,
+                        })
+                      }
+                    >
+                      <FaCog />
+                    </button>
                     <button
                       className="btn btn-primary join-item btn-wide"
                       disabled={disabled || !!state.appStatus}

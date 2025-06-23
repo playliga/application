@@ -37,6 +37,10 @@ const routes = createMemoryRouter([
         element: <Routes.Modal.Postgame />,
       },
       {
+        path: '/pregame',
+        element: <Routes.Modal.Pregame />,
+      },
+      {
         path: '/settings',
         element: <Routes.Modal.Settings />,
       },
