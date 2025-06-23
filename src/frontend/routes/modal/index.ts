@@ -9,7 +9,6 @@ import Issues from './issues';
 import Markdown from './markdown';
 import Mods from './mods';
 import Postgame from './postgame';
-import Pregame from './pregame';
 import Settings from './settings';
 import Transfer from './transfer';
 
@@ -23,7 +22,6 @@ export default {
   Brackets,
   Mods,
   Postgame,
-  Pregame,
   Settings,
   Transfer,
 
