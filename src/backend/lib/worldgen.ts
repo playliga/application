@@ -236,6 +236,13 @@ async function createMatchdays(
         match.data['map'] = mapName;
       }
 
+      // how many games in this series?
+      let num = 1;
+
+      if (Constants.TierMatchConfig[competition.tier.slug]) {
+        num = Constants.TierMatchConfig[competition.tier.slug][totalRounds - match.id.r] || num;
+      }
+
       // create match record
       const newMatch = await DatabaseClient.prisma.match.create({
         data: {
@@ -253,16 +260,14 @@ async function createMatchdays(
             create: competitors,
           },
           games: {
-            create: [
-              {
-                status,
-                map: mapName,
-                num: 1,
-                teams: {
-                  create: competitors,
-                },
+            create: Array.from({ length: num }).map((_, idx) => ({
+              status,
+              map: mapName,
+              num: idx,
+              teams: {
+                create: competitors,
               },
-            ],
+            })),
           },
         },
       });
