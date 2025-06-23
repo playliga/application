@@ -19,6 +19,7 @@ import {
   FaExclamationTriangle,
   FaForward,
   FaMapSigns,
+  FaStream,
   FaTv,
 } from 'react-icons/fa';
 
@@ -538,6 +539,13 @@ export default function () {
                             {spotlight.competition.tier.groupSize
                               ? `${t('shared.matchday')} ${spotlight.round}`
                               : Util.parseCupRounds(spotlight.round, spotlight.totalRounds)}
+                          </span>
+                        </li>
+                        <li className="stack-x items-center">
+                          <FaStream />
+                          <span>
+                            {t('shared.bestOf')}&nbsp;
+                            {spotlight.games.length}
                           </span>
                         </li>
                       </ul>
