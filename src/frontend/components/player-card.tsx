@@ -123,10 +123,10 @@ export default function (props: PlayerCardProps) {
           props.compact && 'player-card-compact',
         )}
       >
-        <header className="divide-base-content/10 grid grid-cols-4 items-center divide-x">
+        <header className="divide-base-content/10 mb-0! grid grid-cols-4 items-center divide-x">
           <button
             title={t('playerCard.setAsStarter')}
-            className="hover:bg-transparent! disabled:bg-transparent! [&_svg]:hover:text-yellow-500"
+            className="border-0! hover:bg-transparent! disabled:bg-transparent! [&_svg]:hover:text-yellow-500"
             disabled={!props.onClickStarter}
             onClick={props.onClickStarter || null}
           >

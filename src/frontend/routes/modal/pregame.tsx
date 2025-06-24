@@ -161,7 +161,7 @@ export default function () {
           </article>
         </header>
       </section>
-      <section className="divide-base-content/10 grid grid-cols-2 divide-x">
+      <section className="divide-base-content/10 grid grid-cols-2 items-start divide-x">
         {match.competitors.map((competitor) => {
           const isUserTeam = competitor.teamId === state.profile.teamId;
           const team = competitor.team;

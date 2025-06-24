@@ -304,6 +304,10 @@ meter::-webkit-meter-bar {
     header {
       @apply my-2 grid;
     }
+
+    header > nav {
+      @apply place-items-start text-left;
+    }
   }
 
   header {
