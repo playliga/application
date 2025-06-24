@@ -137,7 +137,7 @@ export default function () {
     [vetoHistory, vetoSequence],
   );
 
-  // handle when cpu makes their map vetos
+  // handle when cpu makes their map vetoes
   const cpu = React.useMemo(
     () =>
       !!match && match.competitors.find((competitor) => competitor.teamId !== state.profile.teamId),
