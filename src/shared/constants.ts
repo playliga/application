@@ -1509,6 +1509,7 @@ export const SponsorContract: Record<
  * counting back from the grand-final.
  *
  * For example, an array of `[7, 5, 3]`:
+ *
  * - grand-final is bo7
  * - semi-final is bo5
  * - quarter-final is bo3
