@@ -6,11 +6,20 @@
  */
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { merge, pick } from 'lodash';
+import { cloneDeep, isNull, merge, pick, set } from 'lodash';
 import { Constants, Eagers, Util } from '@liga/shared';
+import { cx } from '@liga/frontend/lib';
 import { AppStateContext } from '@liga/frontend/redux';
 import { useTranslation } from '@liga/frontend/hooks';
 import { Image } from '@liga/frontend/components';
+import { FaExclamationTriangle } from 'react-icons/fa';
+
+/** @enum */
+enum Tab {
+  MAPS,
+  SETTINGS,
+  SQUADS,
+}
 
 /** @type {Matches} */
 type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
@@ -22,6 +31,26 @@ const LOCAL_STORAGE_KEY = 'settings';
 const SETTINGS_DEFAULT = pick(Constants.Settings, ['matchRules']);
 
 /**
+ * Renders an override settings warning.
+ *
+ * @param props       The root props.
+ * @param props.left  The left value to compare.
+ * @param props.right The right value to compare.
+ * @function
+ */
+function SettingsOverrideLabel(props: { left: unknown; right: unknown }) {
+  if (props.left === props.right) {
+    return;
+  }
+
+  return (
+    <span className="tooltip" data-tip="Overrides the default. Resets after this match ends.">
+      <FaExclamationTriangle className="text-warning" />
+    </span>
+  );
+}
+
+/**
  * Exports this module.
  *
  * @exports
@@ -30,6 +59,7 @@ export default function () {
   const location = useLocation();
   const t = useTranslation('windows');
   const { state } = React.useContext(AppStateContext);
+  const [activeTab, setActiveTab] = React.useState<Tab>(Tab.MAPS);
   const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
   const [match, setMatch] = React.useState<Matches[number]>();
 
@@ -73,6 +103,14 @@ export default function () {
       setSettings(pick(settingsAll, ['matchRules']));
     }
   }, [settingsLocal, settingsAll]);
+
+  // handle settings updates
+  const onSettingsUpdate = (path: string, value: unknown) => {
+    const modified = cloneDeep(settings);
+    set(modified, path, value);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(modified));
+    setSettings(modified);
+  };
 
   // grab basic match info
   const game = React.useMemo(() => match && match.games[0], [match]);
@@ -127,6 +165,139 @@ export default function () {
           </article>
         </header>
       </section>
+      <section role="tablist" className="tabs-box tabs rounded-none border-t-0!">
+        {Object.keys(Tab)
+          .filter((tabKey) => isNaN(Number(tabKey)))
+          .map((tabKey: keyof typeof Tab) => (
+            <a
+              key={tabKey + '__tab'}
+              role="tab"
+              className={cx('tab capitalize', Tab[tabKey] === activeTab && 'tab-active')}
+              onClick={() => setActiveTab(Tab[tabKey])}
+            >
+              {tabKey.replace('_', ' ').toLowerCase()}
+            </a>
+          ))}
+      </section>
+      {activeTab === Tab.SETTINGS && (
+        <form className="form-ios">
+          <fieldset>
+            <article>
+              <header>
+                <p>{t('shared.maxRoundsTitle')}</p>
+                <SettingsOverrideLabel
+                  left={Number(settings.matchRules.maxRounds)}
+                  right={Number(settingsAll.matchRules.maxRounds)}
+                />
+              </header>
+              <aside>
+                <select
+                  className="select"
+                  onChange={(event) => onSettingsUpdate('matchRules.maxRounds', event.target.value)}
+                  value={settings.matchRules.maxRounds}
+                >
+                  {[6, 12, 24, 30].map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </aside>
+            </article>
+            <article>
+              <header>
+                <p>{t('shared.startMoneyTitle')}</p>
+              </header>
+              <aside>
+                <select
+                  className="select"
+                  onChange={(event) =>
+                    onSettingsUpdate('matchRules.startMoney', event.target.value)
+                  }
+                  value={settings.matchRules.startMoney}
+                >
+                  {[800, 10_000].map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </aside>
+            </article>
+            <article>
+              <header>
+                <p>{t('shared.freezeTimeTitle')}</p>
+                <SettingsOverrideLabel
+                  left={Number(settings.matchRules.freezeTime)}
+                  right={Number(settingsAll.matchRules.freezeTime)}
+                />
+              </header>
+              <aside>
+                <select
+                  className="select"
+                  onChange={(event) =>
+                    onSettingsUpdate('matchRules.freezeTime', event.target.value)
+                  }
+                  value={settings.matchRules.freezeTime}
+                >
+                  {[7, 15].map((value) => (
+                    <option key={value} value={value}>
+                      {value}s
+                    </option>
+                  ))}
+                </select>
+              </aside>
+            </article>
+            <article>
+              <header>
+                <p>{t('shared.mapOverrideTitle')}</p>
+                <SettingsOverrideLabel
+                  left={Number(settings.matchRules.mapOverride)}
+                  right={Number(settingsAll.matchRules.mapOverride)}
+                />
+              </header>
+              <aside>
+                <select
+                  className="select"
+                  onChange={(event) =>
+                    onSettingsUpdate(
+                      'matchRules.mapOverride',
+                      event.target.value === 'none' ? null : event.target.value,
+                    )
+                  }
+                  value={
+                    isNull(settings.matchRules.mapOverride) ? '' : settings.matchRules.mapOverride
+                  }
+                >
+                  <option value={null}>none</option>
+                  {Constants.MapPool.map((map) => (
+                    <option key={map} value={map}>
+                      {map}
+                    </option>
+                  ))}
+                </select>
+              </aside>
+            </article>
+            <article>
+              <header>
+                <p>{t('shared.overtimeTitle')}</p>
+                <p>{t('shared.overtimeSubtitle')}</p>
+              </header>
+              <aside>
+                <input
+                  type="checkbox"
+                  className="toggle"
+                  onChange={(event) =>
+                    onSettingsUpdate('matchRules.overtime', event.target.checked)
+                  }
+                  checked={settings.matchRules.overtime}
+                  value={String(settings.matchRules.overtime)}
+                />
+              </aside>
+            </article>
+          </fieldset>
+        </form>
+      )}
     </main>
   );
 }
