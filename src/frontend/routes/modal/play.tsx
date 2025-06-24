@@ -224,13 +224,17 @@ export default function () {
       </section>
       {activeTab === Tab.MAPS && (
         <section className="flex flex-1 flex-col overflow-y-scroll">
-          <p>
-            {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
-            <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map.
-          </p>
-          <p>
-            <em>Tip: Click play and have everything auto-picked for you</em>
-          </p>
+          {!!vetoSequenceStep && (
+            <React.Fragment>
+              <p>
+                {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+                <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map.
+              </p>
+              <p>
+                <em>Tip: Click play and have everything auto-picked for you</em>
+              </p>
+            </React.Fragment>
+          )}
           <div
             className="grid h-full flex-1 grid-cols-11 gap-1"
             style={{
