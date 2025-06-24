@@ -17,8 +17,8 @@ import { FaExclamationTriangle } from 'react-icons/fa';
 /** @enum */
 enum Tab {
   MAPS,
-  SETTINGS,
   SQUADS,
+  SETTINGS,
 }
 
 /** @type {Matches} */
@@ -188,7 +188,93 @@ export default function () {
       {activeTab === Tab.MAPS && (
         <section className="flex-1 overflow-y-scroll">
           <p>Pick and ban maps.</p>
-          <p>Or just click play to auto-pick for you.</p>
+          <p>
+            <em>Or just click play to auto-pick for you.</em>
+          </p>
+        </section>
+      )}
+      {activeTab === Tab.SQUADS && (
+        <section className="divide-base-content/10 grid flex-1 grid-cols-2 items-start divide-x overflow-y-scroll">
+          {match.competitors.map((competitor) => {
+            const isUserTeam = competitor.teamId === state.profile.teamId;
+            const team = competitor.team;
+
+            // wire user's squad which can be changed
+            // on-the-fly to this competitor's squad
+            if (isUserTeam) {
+              team.players = team.players.map((player) => ({
+                ...player,
+                starter: userSquad.find((userPlayer) => userPlayer.id === player.id)?.starter,
+              }));
+            }
+
+            const starters = Util.getSquad(team, state.profile, true);
+            const bench = differenceBy(team.players, starters, 'id');
+            const squad = { starters, bench };
+
+            return (
+              <table key={competitor.id + '__competitor'} className="table-xs table table-fixed">
+                {Object.keys(squad).map((key) => (
+                  <React.Fragment key={key}>
+                    <thead>
+                      <tr>
+                        <th>{key.toUpperCase()}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {squad[key as keyof typeof squad].map((player) => (
+                        <tr key={player.id + '__squad'}>
+                          <td
+                            title={
+                              player.id === state.profile.playerId ? t('shared.you') : undefined
+                            }
+                            className={cx(
+                              'p-0',
+                              player.id === state.profile.playerId && 'bg-base-200/50',
+                            )}
+                          >
+                            <PlayerCard
+                              collapsed
+                              compact
+                              key={player.id + '__squad'}
+                              className="border-transparent bg-transparent"
+                              game={settingsAll.general.game}
+                              player={player}
+                              noStats={player.id === state.profile.playerId}
+                              onClickStarter={
+                                isUserTeam &&
+                                player.id !== state.profile.playerId &&
+                                (userSquad.filter((userPlayer) => userPlayer.starter).length <
+                                  Constants.Application.SQUAD_MIN_LENGTH - 1 ||
+                                  player.starter) &&
+                                (() => {
+                                  api.squad
+                                    .update({
+                                      where: { id: player.id },
+                                      data: {
+                                        starter: !player.starter,
+                                      },
+                                    })
+                                    .then(setUserSquad);
+                                })
+                              }
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                      {squad[key as keyof typeof squad].length === 0 && (
+                        <tr>
+                          <td className="h-[70px] text-center">
+                            <b>{team.name}</b> {t('shared.noBench')}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </React.Fragment>
+                ))}
+              </table>
+            );
+          })}
         </section>
       )}
       {activeTab === Tab.SETTINGS && (
@@ -310,91 +396,7 @@ export default function () {
           </fieldset>
         </form>
       )}
-      {activeTab === Tab.SQUADS && (
-        <section className="divide-base-content/10 grid flex-1 grid-cols-2 items-start divide-x overflow-y-scroll">
-          {match.competitors.map((competitor) => {
-            const isUserTeam = competitor.teamId === state.profile.teamId;
-            const team = competitor.team;
-
-            // wire user's squad which can be changed
-            // on-the-fly to this competitor's squad
-            if (isUserTeam) {
-              team.players = team.players.map((player) => ({
-                ...player,
-                starter: userSquad.find((userPlayer) => userPlayer.id === player.id)?.starter,
-              }));
-            }
-
-            const starters = Util.getSquad(team, state.profile, true);
-            const bench = differenceBy(team.players, starters, 'id');
-            const squad = { starters, bench };
-
-            return (
-              <table key={competitor.id + '__competitor'} className="table-xs table table-fixed">
-                {Object.keys(squad).map((key) => (
-                  <React.Fragment key={key}>
-                    <thead>
-                      <tr>
-                        <th>{key.toUpperCase()}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {squad[key as keyof typeof squad].map((player) => (
-                        <tr key={player.id + '__squad'}>
-                          <td
-                            title={
-                              player.id === state.profile.playerId ? t('shared.you') : undefined
-                            }
-                            className={cx(
-                              'p-0',
-                              player.id === state.profile.playerId && 'bg-base-200/50',
-                            )}
-                          >
-                            <PlayerCard
-                              collapsed
-                              compact
-                              key={player.id + '__squad'}
-                              className="border-transparent bg-transparent"
-                              game={settingsAll.general.game}
-                              player={player}
-                              noStats={player.id === state.profile.playerId}
-                              onClickStarter={
-                                isUserTeam &&
-                                player.id !== state.profile.playerId &&
-                                (userSquad.filter((userPlayer) => userPlayer.starter).length <
-                                  Constants.Application.SQUAD_MIN_LENGTH - 1 ||
-                                  player.starter) &&
-                                (() => {
-                                  api.squad
-                                    .update({
-                                      where: { id: player.id },
-                                      data: {
-                                        starter: !player.starter,
-                                      },
-                                    })
-                                    .then(setUserSquad);
-                                })
-                              }
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                      {squad[key as keyof typeof squad].length === 0 && (
-                        <tr>
-                          <td className="h-[70px] text-center">
-                            <b>{team.name}</b> {t('shared.noBench')}
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </React.Fragment>
-                ))}
-              </table>
-            );
-          })}
-        </section>
-      )}
-      <button className="btn btn-xl btn-block btn-primary rounded-none">
+      <button className="btn btn-xl btn-block btn-primary rounded-none active:translate-0!">
         {t('main.dashboard.play')}
       </button>
     </main>
