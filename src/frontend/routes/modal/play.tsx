@@ -131,6 +131,10 @@ export default function () {
     () => vetoSequence[vetoHistory.length],
     [vetoSequence, vetoHistory],
   );
+  const vetoSequenceComplete = React.useMemo(
+    () => vetoHistory.length >= vetoSequence.length,
+    [vetoHistory, vetoSequence],
+  );
 
   // handle settings updates
   const onSettingsUpdate = (path: string, value: unknown) => {
@@ -238,8 +242,11 @@ export default function () {
                 key={mapName}
                 title={Util.convertMapPool(mapName, settingsAll.general.game)}
                 src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
-                className="h-full w-full cursor-pointer object-cover"
-                onClick={() => onVetoSelection(mapName)}
+                className={cx(
+                  'h-full w-full object-cover',
+                  !vetoSequenceComplete && 'cursor-pointer',
+                )}
+                onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
               />
             ))}
           </div>
