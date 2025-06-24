@@ -32,7 +32,7 @@ interface MapVetoAction {
 type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
 
 /** @constant */
-const CPU_THINKING_TIME = 1500;
+const CPU_THINKING_TIME = 3000;
 
 /** @constant */
 const LOCAL_STORAGE_KEY = 'settings';
