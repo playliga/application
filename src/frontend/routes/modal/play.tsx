@@ -156,7 +156,6 @@ export default function () {
     setCpuThinking(true);
 
     const timeout = setTimeout(() => {
-      // @todo: use `chance.pluck`
       onVetoSelection(sample(Constants.MapPool));
       setCpuThinking(false);
     }, CPU_THINKING_TIME);
