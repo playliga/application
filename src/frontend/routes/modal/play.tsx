@@ -278,7 +278,7 @@ export default function () {
                   key={mapName}
                   onClick={() => !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)}
                   className={cx(
-                    'relative h-full w-full border-2 shadow-md',
+                    'relative h-full w-full border shadow-md',
                     !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
                     found
                       ? found.type === Constants.MapVetoAction.PICK
@@ -293,7 +293,19 @@ export default function () {
                     className="h-full object-cover"
                   />
                   {!!found && (
-                    <Image src={found.team.blazon} className="absolute bottom-0 size-16" />
+                    <React.Fragment>
+                      <span
+                        className={cx(
+                          'badge badge-sm absolute top-2 left-1/2 -translate-x-1/2',
+                          found.type === Constants.MapVetoAction.PICK
+                            ? 'badge-success'
+                            : 'badge-error',
+                        )}
+                      >
+                        {found.type.toUpperCase()}
+                      </span>
+                      <Image src={found.team.blazon} className="absolute bottom-0 size-16" />
+                    </React.Fragment>
                   )}
                 </figure>
               );
