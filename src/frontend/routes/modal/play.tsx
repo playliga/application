@@ -186,11 +186,26 @@ export default function () {
           ))}
       </section>
       {activeTab === Tab.MAPS && (
-        <section className="flex-1 overflow-y-scroll">
+        <section className="flex flex-1 flex-col overflow-y-scroll">
           <p>Pick and ban maps.</p>
           <p>
             <em>Or just click play to auto-pick for you.</em>
           </p>
+          <div
+            className="grid h-full flex-1 grid-cols-11 gap-1"
+            style={{
+              gridTemplateColumns: `repeat(${Constants.MapPool.length}, minmax(0, 1fr))`,
+            }}
+          >
+            {Constants.MapPool.map((mapName) => (
+              <Image
+                key={mapName}
+                title={Util.convertMapPool(mapName, settingsAll.general.game)}
+                className="h-full w-full object-cover"
+                src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
+              />
+            ))}
+          </div>
         </section>
       )}
       {activeTab === Tab.SQUADS && (
