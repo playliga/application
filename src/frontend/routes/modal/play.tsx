@@ -137,6 +137,26 @@ export default function () {
     [vetoHistory, vetoSequence],
   );
 
+  // handle settings updates
+  const onSettingsUpdate = (path: string, value: unknown) => {
+    const modified = cloneDeep(settings);
+    set(modified, path, value);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(modified));
+    setSettings(modified);
+  };
+
+  // handle map veto selections
+  const onVetoSelection = (map: string) => {
+    setVetoHistory([
+      ...vetoHistory,
+      {
+        team: match.competitors[vetoSequenceStep.team].team,
+        type: vetoSequenceStep.type,
+        map,
+      },
+    ]);
+  };
+
   // handle when cpu makes their map veto
   const cpu = React.useMemo(
     () =>
@@ -162,26 +182,6 @@ export default function () {
 
     return () => clearTimeout(timeout);
   }, [cpuThinking, vetoSequenceStep, match]);
-
-  // handle settings updates
-  const onSettingsUpdate = (path: string, value: unknown) => {
-    const modified = cloneDeep(settings);
-    set(modified, path, value);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(modified));
-    setSettings(modified);
-  };
-
-  // handle map veto selections
-  const onVetoSelection = (map: string) => {
-    setVetoHistory([
-      ...vetoHistory,
-      {
-        team: match.competitors[vetoSequenceStep.team].team,
-        type: vetoSequenceStep.type,
-        map,
-      },
-    ]);
-  };
 
   if (!state.profile || !match) {
     return (
