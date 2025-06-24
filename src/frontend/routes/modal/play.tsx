@@ -124,7 +124,7 @@ export default function () {
   };
 
   // handle map veto selections
-  const onVeto = (map: string) => {
+  const onVetoSelection = (map: string) => {
     setVetoHistory([
       ...vetoHistory,
       {
