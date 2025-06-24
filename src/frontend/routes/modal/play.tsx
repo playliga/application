@@ -245,12 +245,11 @@ export default function () {
               const found = vetoHistory.find((item) => item.map === mapName);
 
               return (
-                <Image
+                <figure
                   key={mapName}
-                  title={Util.convertMapPool(mapName, settingsAll.general.game)}
-                  src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
+                  onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
                   className={cx(
-                    'h-full w-full border object-cover shadow-md',
+                    'relative h-full w-full border shadow-md',
                     !vetoSequenceComplete && 'cursor-pointer',
                     found
                       ? found.type === Constants.MapVetoAction.PICK
@@ -258,8 +257,16 @@ export default function () {
                         : 'border-error shadow-error'
                       : 'border-base-content/50 shadow-base-content/50',
                   )}
-                  onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
-                />
+                >
+                  <Image
+                    title={Util.convertMapPool(mapName, settingsAll.general.game)}
+                    src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
+                    className="h-full object-cover"
+                  />
+                  {!!found && (
+                    <Image src={found.team.blazon} className="absolute bottom-0 size-16" />
+                  )}
+                </figure>
               );
             })}
           </article>
