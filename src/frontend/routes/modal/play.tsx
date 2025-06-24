@@ -167,7 +167,6 @@ export default function () {
     () => !!match && !!cpu && match.competitors.findIndex((competitor) => competitor.id === cpu.id),
     [match, cpu],
   );
-
   React.useEffect(() => {
     if (!vetoSequenceStep || vetoSequenceStep.team !== cpuIdx) {
       return;
@@ -175,8 +174,11 @@ export default function () {
 
     setCpuThinking(true);
 
+    const pool = Constants.MapPool.filter((mapName) =>
+      vetoHistory.every((item) => item.map !== mapName),
+    );
     const timeout = setTimeout(() => {
-      onVetoSelection(sample(Constants.MapPool));
+      onVetoSelection(sample(pool));
       setCpuThinking(false);
     }, CPU_THINKING_TIME);
 
@@ -276,8 +278,8 @@ export default function () {
                   key={mapName}
                   onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
                   className={cx(
-                    'relative h-full w-full border shadow-md',
-                    !vetoSequenceComplete && 'cursor-pointer',
+                    'relative h-full w-full border-2 shadow-md',
+                    !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
                     found
                       ? found.type === Constants.MapVetoAction.PICK
                         ? 'border-success shadow-success'
