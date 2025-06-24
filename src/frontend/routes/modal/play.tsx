@@ -124,13 +124,10 @@ export default function () {
   const [home, away] = React.useMemo(() => (match ? match.competitors : []), [match]);
 
   // load map veto info
-  const vetoSequence = React.useMemo(() => {
-    if (!match) {
-      return [];
-    }
-
-    return Constants.MapVetoConfig[match.games.length];
-  }, [match]);
+  const vetoSequence = React.useMemo(
+    () => (match ? Constants.MapVetoConfig[match.games.length] : []),
+    [match],
+  );
   const vetoSequenceStep = React.useMemo(
     () => vetoSequence[vetoHistory.length],
     [vetoHistory, vetoSequence],
@@ -258,8 +255,8 @@ export default function () {
           {!!vetoSequenceStep && (
             <React.Fragment>
               <p>
-                {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
-                <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map.
+                Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+                <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
               </p>
               <p>
                 <em>Tip: Click play and have everything auto-picked for you</em>
