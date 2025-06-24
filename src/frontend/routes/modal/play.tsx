@@ -185,8 +185,14 @@ export default function () {
             </a>
           ))}
       </section>
+      {activeTab === Tab.MAPS && (
+        <section className="flex-1 overflow-y-scroll">
+          <p>Pick and ban maps.</p>
+          <p>Or just click play to auto-pick for you.</p>
+        </section>
+      )}
       {activeTab === Tab.SETTINGS && (
-        <form className="form-ios overflow-y- flex-1">
+        <form className="form-ios flex-1 overflow-y-scroll">
           <fieldset>
             <article>
               <header>
@@ -388,6 +394,9 @@ export default function () {
           })}
         </section>
       )}
+      <button className="btn btn-xl btn-block btn-primary rounded-none">
+        {t('main.dashboard.play')}
+      </button>
     </main>
   );
 }
