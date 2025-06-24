@@ -69,10 +69,10 @@ export default function () {
   const [activeTab, setActiveTab] = React.useState<Tab>(Tab.MAPS);
   const [match, setMatch] = React.useState<Matches[number]>();
   const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
-  const [vetoHistory, setVetoHistory] = React.useState<Array<MapVetoAction>>([]);
   const [userSquad, setUserSquad] = React.useState<
     Awaited<ReturnType<typeof api.squad.all<typeof Eagers.player>>>
   >([]);
+  const [vetoHistory, setVetoHistory] = React.useState<Array<MapVetoAction>>([]);
 
   // we only want to maintain and override specific settings
   // and not copy/merge with the whole object
