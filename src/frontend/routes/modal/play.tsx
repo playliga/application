@@ -115,6 +115,23 @@ export default function () {
     }
   }, [settingsLocal, settingsAll]);
 
+  // grab basic match info
+  const game = React.useMemo(() => match && match.games[0], [match]);
+  const [home, away] = React.useMemo(() => (match ? match.competitors : []), [match]);
+
+  // load map veto info
+  const vetoSequence = React.useMemo(() => {
+    if (!match) {
+      return [];
+    }
+
+    return Constants.MapVetoConfig[match.games.length];
+  }, [match]);
+  const vetoSequenceStep = React.useMemo(
+    () => vetoSequence[vetoHistory.length],
+    [vetoSequence, vetoHistory],
+  );
+
   // handle settings updates
   const onSettingsUpdate = (path: string, value: unknown) => {
     const modified = cloneDeep(settings);
@@ -128,28 +145,12 @@ export default function () {
     setVetoHistory([
       ...vetoHistory,
       {
-        team: match.competitors[currentStep.team].team,
-        type: currentStep.type,
+        team: match.competitors[vetoSequenceStep.team].team,
+        type: vetoSequenceStep.type,
         map,
       },
     ]);
   };
-
-  // grab basic match info
-  const game = React.useMemo(() => match && match.games[0], [match]);
-  const [home, away] = React.useMemo(() => (match ? match.competitors : []), [match]);
-
-  // load map veto sequence config
-  const sequence = React.useMemo(() => {
-    if (!match) {
-      return [];
-    }
-
-    return Constants.MapVetoConfig[match.games.length];
-  }, [match]);
-
-  // calculate map veto state
-  const currentStep = React.useMemo(() => sequence[vetoHistory.length], [sequence, vetoHistory]);
 
   if (!state.profile || !match) {
     return (
@@ -220,8 +221,8 @@ export default function () {
       {activeTab === Tab.MAPS && (
         <section className="flex flex-1 flex-col overflow-y-scroll">
           <p>
-            {match.competitors[currentStep.team].team.name} to&nbsp;
-            <strong>{currentStep.type.toUpperCase()}</strong> a map.
+            {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+            <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map.
           </p>
           <p>
             <em>Tip: Click play and have everything auto-picked for you</em>
