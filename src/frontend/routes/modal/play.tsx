@@ -223,7 +223,7 @@ export default function () {
           ))}
       </section>
       {activeTab === Tab.MAPS && (
-        <section className="flex flex-1 flex-col overflow-y-scroll">
+        <section className="flex flex-1 flex-col gap-1 overflow-y-scroll">
           {!!vetoSequenceStep && (
             <React.Fragment>
               <p>
