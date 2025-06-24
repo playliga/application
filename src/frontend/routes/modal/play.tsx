@@ -237,8 +237,9 @@ export default function () {
               <Image
                 key={mapName}
                 title={Util.convertMapPool(mapName, settingsAll.general.game)}
-                className="h-full w-full object-cover"
                 src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
+                className="h-full w-full object-cover"
+                onClick={() => onVetoSelection(mapName)}
               />
             ))}
           </div>
