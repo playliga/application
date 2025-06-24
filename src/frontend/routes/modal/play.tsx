@@ -21,15 +21,15 @@ enum Tab {
   SETTINGS,
 }
 
-/** @type {Matches} */
-type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
-
 /** @interface */
 interface MapVetoAction {
-  team: Matches[number]['competitors'][number]['team'];
+  team: Awaited<ReturnType<typeof api.teams.all>>[number];
   type: Constants.MapVetoAction;
   map: string;
 }
+
+/** @type {Matches} */
+type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
 
 /** @constant */
 const LOCAL_STORAGE_KEY = 'settings';
