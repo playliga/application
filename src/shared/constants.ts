@@ -322,6 +322,12 @@ export enum IssueType {
   FEATURE,
 }
 
+/** @enum */
+export enum MapVetoAction {
+  BAN = 'ban',
+  PICK = 'pick',
+}
+
 /**
  * The possible outcomes for a match between two teams.
  *
@@ -957,6 +963,30 @@ export const MapPoolReplacements: Record<string, Record<string, string>> = {
     de_vertigo: 'de_dust2_cz',
     de_cache: 'de_dust2_cz',
   },
+};
+
+/**
+ * Map veto config.
+ *
+ * @constant
+ */
+export const MapVetoConfig: Record<number, Array<{ team: number; type: MapVetoAction }>> = {
+  3: [
+    { team: 0, type: MapVetoAction.BAN },
+    { team: 1, type: MapVetoAction.BAN },
+    { team: 0, type: MapVetoAction.PICK },
+    { team: 1, type: MapVetoAction.PICK },
+    { team: 1, type: MapVetoAction.BAN },
+    { team: 0, type: MapVetoAction.BAN },
+  ],
+  5: [
+    { team: 0, type: MapVetoAction.BAN },
+    { team: 1, type: MapVetoAction.BAN },
+    { team: 0, type: MapVetoAction.PICK },
+    { team: 1, type: MapVetoAction.PICK },
+    { team: 1, type: MapVetoAction.PICK },
+    { team: 0, type: MapVetoAction.PICK },
+  ],
 };
 
 /**

@@ -119,6 +119,15 @@ export default function () {
   const game = React.useMemo(() => match && match.games[0], [match]);
   const [home, away] = React.useMemo(() => (match ? match.competitors : []), [match]);
 
+  // load map veto sequence config
+  const sequence = React.useMemo(() => {
+    if (!match) {
+      return;
+    }
+
+    return Constants.MapVetoConfig[match.games.length];
+  }, [match]);
+
   if (!state.profile || !match) {
     return (
       <main className="h-screen w-screen">
@@ -187,9 +196,10 @@ export default function () {
       </section>
       {activeTab === Tab.MAPS && (
         <section className="flex flex-1 flex-col overflow-y-scroll">
-          <p>Pick and ban maps.</p>
+          <p>Map Veto</p>
+          <p>Best of {match.games.length} series</p>
           <p>
-            <em>Or just click play to auto-pick for you.</em>
+            <em>Tip: Click play and have everything auto-picked for you</em>
           </p>
           <div
             className="grid h-full flex-1 grid-cols-11 gap-1"
