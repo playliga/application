@@ -168,7 +168,10 @@ export default function () {
           </article>
         </header>
       </section>
-      <section role="tablist" className="tabs-box tabs rounded-none border-t-0!">
+      <section
+        role="tablist"
+        className="tabs-box tabs border-base-content/10 rounded-none border-y"
+      >
         {Object.keys(Tab)
           .filter((tabKey) => isNaN(Number(tabKey)))
           .map((tabKey: keyof typeof Tab) => (
@@ -325,7 +328,7 @@ export default function () {
                 {Object.keys(squad).map((key) => (
                   <React.Fragment key={key}>
                     <thead>
-                      <tr className="border-t-base-content/10 border-t">
+                      <tr>
                         <th>{key.toUpperCase()}</th>
                       </tr>
                     </thead>
