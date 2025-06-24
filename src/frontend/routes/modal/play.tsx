@@ -129,7 +129,7 @@ export default function () {
   }, [match]);
   const vetoSequenceStep = React.useMemo(
     () => vetoSequence[vetoHistory.length],
-    [vetoSequence, vetoHistory],
+    [vetoHistory, vetoSequence],
   );
   const vetoSequenceComplete = React.useMemo(
     () => vetoHistory.length >= vetoSequence.length,
