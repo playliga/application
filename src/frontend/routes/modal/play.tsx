@@ -6,12 +6,12 @@
  */
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { cloneDeep, isNull, merge, pick, set } from 'lodash';
+import { cloneDeep, differenceBy, isNull, merge, pick, set } from 'lodash';
 import { Constants, Eagers, Util } from '@liga/shared';
 import { cx } from '@liga/frontend/lib';
 import { AppStateContext } from '@liga/frontend/redux';
 import { useTranslation } from '@liga/frontend/hooks';
-import { Image } from '@liga/frontend/components';
+import { Image, PlayerCard } from '@liga/frontend/components';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
 /** @enum */
@@ -60,8 +60,11 @@ export default function () {
   const t = useTranslation('windows');
   const { state } = React.useContext(AppStateContext);
   const [activeTab, setActiveTab] = React.useState<Tab>(Tab.MAPS);
-  const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
   const [match, setMatch] = React.useState<Matches[number]>();
+  const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
+  const [userSquad, setUserSquad] = React.useState<
+    Awaited<ReturnType<typeof api.squad.all<typeof Eagers.player>>>
+  >([]);
 
   // we only want to maintain and override specific settings
   // and not copy/merge with the whole object
@@ -180,7 +183,7 @@ export default function () {
           ))}
       </section>
       {activeTab === Tab.SETTINGS && (
-        <form className="form-ios">
+        <form className="form-ios overflow-y- flex-1">
           <fieldset>
             <article>
               <header>
@@ -297,6 +300,90 @@ export default function () {
             </article>
           </fieldset>
         </form>
+      )}
+      {activeTab === Tab.SQUADS && (
+        <section className="divide-base-content/10 grid flex-1 grid-cols-2 items-start divide-x overflow-y-scroll">
+          {match.competitors.map((competitor) => {
+            const isUserTeam = competitor.teamId === state.profile.teamId;
+            const team = competitor.team;
+
+            // wire user's squad which can be changed
+            // on-the-fly to this competitor's squad
+            if (isUserTeam) {
+              team.players = team.players.map((player) => ({
+                ...player,
+                starter: userSquad.find((userPlayer) => userPlayer.id === player.id)?.starter,
+              }));
+            }
+
+            const starters = Util.getSquad(team, state.profile, true);
+            const bench = differenceBy(team.players, starters, 'id');
+            const squad = { starters, bench };
+
+            return (
+              <table key={competitor.id + '__competitor'} className="table-xs table table-fixed">
+                {Object.keys(squad).map((key) => (
+                  <React.Fragment key={key}>
+                    <thead>
+                      <tr className="border-t-base-content/10 border-t">
+                        <th>{key.toUpperCase()}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {squad[key as keyof typeof squad].map((player) => (
+                        <tr key={player.id + '__squad'}>
+                          <td
+                            title={
+                              player.id === state.profile.playerId ? t('shared.you') : undefined
+                            }
+                            className={cx(
+                              'p-0',
+                              player.id === state.profile.playerId && 'bg-base-200/50',
+                            )}
+                          >
+                            <PlayerCard
+                              collapsed
+                              compact
+                              key={player.id + '__squad'}
+                              className="border-transparent bg-transparent"
+                              game={settingsAll.general.game}
+                              player={player}
+                              noStats={player.id === state.profile.playerId}
+                              onClickStarter={
+                                isUserTeam &&
+                                player.id !== state.profile.playerId &&
+                                (userSquad.filter((userPlayer) => userPlayer.starter).length <
+                                  Constants.Application.SQUAD_MIN_LENGTH - 1 ||
+                                  player.starter) &&
+                                (() => {
+                                  api.squad
+                                    .update({
+                                      where: { id: player.id },
+                                      data: {
+                                        starter: !player.starter,
+                                      },
+                                    })
+                                    .then(setUserSquad);
+                                })
+                              }
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                      {squad[key as keyof typeof squad].length === 0 && (
+                        <tr>
+                          <td className="h-[70px] text-center">
+                            <b>{team.name}</b> {t('shared.noBench')}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </React.Fragment>
+                ))}
+              </table>
+            );
+          })}
+        </section>
       )}
     </main>
   );
