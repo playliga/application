@@ -21,6 +21,13 @@ enum Tab {
   SETTINGS,
 }
 
+/** @interface */
+interface MapVetoAction {
+  team: Awaited<ReturnType<typeof api.teams.all>>[number];
+  type: Constants.MapVetoAction;
+  map: string;
+}
+
 /** @type {Matches} */
 type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
 
@@ -62,6 +69,7 @@ export default function () {
   const [activeTab, setActiveTab] = React.useState<Tab>(Tab.MAPS);
   const [match, setMatch] = React.useState<Matches[number]>();
   const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
+  const [vetoHistory, setVetoHistory] = React.useState<Array<MapVetoAction>>([]);
   const [userSquad, setUserSquad] = React.useState<
     Awaited<ReturnType<typeof api.squad.all<typeof Eagers.player>>>
   >([]);
@@ -122,11 +130,14 @@ export default function () {
   // load map veto sequence config
   const sequence = React.useMemo(() => {
     if (!match) {
-      return;
+      return [];
     }
 
     return Constants.MapVetoConfig[match.games.length];
   }, [match]);
+
+  // calculate map veto state
+  const currentStep = React.useMemo(() => sequence[vetoHistory.length], [sequence, vetoHistory]);
 
   if (!state.profile || !match) {
     return (
@@ -196,8 +207,10 @@ export default function () {
       </section>
       {activeTab === Tab.MAPS && (
         <section className="flex flex-1 flex-col overflow-y-scroll">
-          <p>Map Veto</p>
-          <p>Best of {match.games.length} series</p>
+          <p>
+            {match.competitors[currentStep.team].team.name} to&nbsp;
+            <strong>{currentStep.type.toUpperCase()}</strong> a map.
+          </p>
           <p>
             <em>Tip: Click play and have everything auto-picked for you</em>
           </p>
