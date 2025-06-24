@@ -21,15 +21,15 @@ enum Tab {
   SETTINGS,
 }
 
+/** @type {Matches} */
+type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
+
 /** @interface */
 interface MapVetoAction {
-  team: Awaited<ReturnType<typeof api.teams.all>>[number];
+  team: Matches[number]['competitors'][number]['team'];
   type: Constants.MapVetoAction;
   map: string;
 }
-
-/** @type {Matches} */
-type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
 
 /** @constant */
 const LOCAL_STORAGE_KEY = 'settings';
@@ -121,6 +121,18 @@ export default function () {
     set(modified, path, value);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(modified));
     setSettings(modified);
+  };
+
+  // handle map veto selections
+  const onVeto = (map: string) => {
+    setVetoHistory([
+      ...vetoHistory,
+      {
+        team: match.competitors[currentStep.team].team,
+        type: currentStep.type,
+        map,
+      },
+    ]);
   };
 
   // grab basic match info
