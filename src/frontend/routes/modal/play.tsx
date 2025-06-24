@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { cloneDeep, differenceBy, isNull, merge, pick, set } from 'lodash';
+import { cloneDeep, differenceBy, isNull, merge, pick, sample, set } from 'lodash';
 import { Constants, Eagers, Util } from '@liga/shared';
 import { cx } from '@liga/frontend/lib';
 import { AppStateContext } from '@liga/frontend/redux';
@@ -30,6 +30,9 @@ interface MapVetoAction {
 
 /** @type {Matches} */
 type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
+
+/** @constant */
+const CPU_THINKING_TIME = 1500;
 
 /** @constant */
 const LOCAL_STORAGE_KEY = 'settings';
@@ -67,6 +70,7 @@ export default function () {
   const t = useTranslation('windows');
   const { state } = React.useContext(AppStateContext);
   const [activeTab, setActiveTab] = React.useState<Tab>(Tab.MAPS);
+  const [cpuThinking, setCpuThinking] = React.useState(false);
   const [match, setMatch] = React.useState<Matches[number]>();
   const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
   const [userSquad, setUserSquad] = React.useState<
@@ -135,6 +139,33 @@ export default function () {
     () => vetoHistory.length >= vetoSequence.length,
     [vetoHistory, vetoSequence],
   );
+
+  // handle when cpu makes their picks
+  const cpu = React.useMemo(
+    () =>
+      !!match && match.competitors.find((competitor) => competitor.teamId !== state.profile.teamId),
+    [match, state],
+  );
+  const cpuIdx = React.useMemo(
+    () => !!match && !!cpu && match.competitors.findIndex((competitor) => competitor.id === cpu.id),
+    [match, cpu],
+  );
+
+  React.useEffect(() => {
+    if (!vetoSequenceStep || vetoSequenceStep.team !== cpuIdx) {
+      return;
+    }
+
+    setCpuThinking(true);
+
+    const timeout = setTimeout(() => {
+      // @todo: use `chance.pluck`
+      onVetoSelection(sample(Constants.MapPool));
+      setCpuThinking(false);
+    }, CPU_THINKING_TIME);
+
+    return () => clearTimeout(timeout);
+  }, [cpuThinking, vetoSequenceStep, match]);
 
   // handle settings updates
   const onSettingsUpdate = (path: string, value: unknown) => {
