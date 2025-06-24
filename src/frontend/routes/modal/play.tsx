@@ -235,7 +235,7 @@ export default function () {
               </p>
             </React.Fragment>
           )}
-          <div
+          <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
               gridTemplateColumns: `repeat(${Constants.MapPool.length}, minmax(0, 1fr))`,
@@ -262,7 +262,7 @@ export default function () {
                 />
               );
             })}
-          </div>
+          </article>
         </section>
       )}
       {activeTab === Tab.SQUADS && (
