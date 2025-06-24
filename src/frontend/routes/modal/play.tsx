@@ -236,23 +236,32 @@ export default function () {
             </React.Fragment>
           )}
           <div
-            className="grid h-full flex-1 grid-cols-11 gap-1"
+            className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
               gridTemplateColumns: `repeat(${Constants.MapPool.length}, minmax(0, 1fr))`,
             }}
           >
-            {Constants.MapPool.map((mapName) => (
-              <Image
-                key={mapName}
-                title={Util.convertMapPool(mapName, settingsAll.general.game)}
-                src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
-                className={cx(
-                  'h-full w-full object-cover',
-                  !vetoSequenceComplete && 'cursor-pointer',
-                )}
-                onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
-              />
-            ))}
+            {Constants.MapPool.map((mapName) => {
+              const found = vetoHistory.find((item) => item.map === mapName);
+
+              return (
+                <Image
+                  key={mapName}
+                  title={Util.convertMapPool(mapName, settingsAll.general.game)}
+                  src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
+                  className={cx(
+                    'h-full w-full border object-cover shadow-md',
+                    !vetoSequenceComplete && 'cursor-pointer',
+                    found
+                      ? found.type === Constants.MapVetoAction.PICK
+                        ? 'border-success shadow-success'
+                        : 'border-error shadow-error'
+                      : 'border-base-content/50 shadow-base-content/50',
+                  )}
+                  onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
+                />
+              );
+            })}
           </div>
         </section>
       )}
