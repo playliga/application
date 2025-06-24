@@ -276,7 +276,7 @@ export default function () {
               return (
                 <figure
                   key={mapName}
-                  onClick={() => !vetoSequenceComplete && onVetoSelection(mapName)}
+                  onClick={() => !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)}
                   className={cx(
                     'relative h-full w-full border-2 shadow-md',
                     !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
