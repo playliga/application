@@ -153,6 +153,13 @@ export default function () {
     () => vetoHistory.length >= vetoSequence.length,
     [vetoHistory, vetoSequence],
   );
+  const vetoPool = React.useMemo(
+    () =>
+      vetoHistory.filter((item) =>
+        [Constants.MapVetoAction.DECIDER, Constants.MapVetoAction.PICK].includes(item.type),
+      ),
+    [vetoHistory],
+  );
 
   // handle settings updates
   const onSettingsUpdate = (path: string, value: unknown) => {
@@ -213,11 +220,11 @@ export default function () {
     );
 
     return () => clearTimeout(timeout);
-  }, [cpuThinking, vetoSequenceStep, match]);
+  }, [cpuIdx, cpuPool, vetoSequenceStep]);
 
   // figure out the decider
   React.useEffect(() => {
-    if (!vetoSequenceComplete) {
+    if (!match || !vetoSequenceComplete || vetoPool.length >= match.games.length) {
       return;
     }
 
@@ -230,7 +237,7 @@ export default function () {
     );
 
     return () => clearTimeout(timeout);
-  }, [vetoSequenceComplete]);
+  }, [vetoSequenceComplete, cpuPool, match]);
 
   if (!state.profile || !match) {
     return (
