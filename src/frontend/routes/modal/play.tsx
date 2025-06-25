@@ -307,27 +307,29 @@ export default function () {
       </section>
       {activeTab === Tab.MAPS && (
         <section className="flex flex-1 flex-col gap-1 overflow-y-scroll">
-          {!!vetoSequenceStep && (
-            <p>
-              <span className="loading loading-dots loading-sm"></span>
-              <span>
-                &nbsp;Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
-              </span>
-              <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
-            </p>
-          )}
-          {!vetoSequenceComplete && !vetoSequenceStep && (
-            <p>
-              <span className="loading loading-dots loading-sm"></span>
-              <span>&nbsp;Randomly picking decider...</span>
-            </p>
-          )}
-          {!!vetoSequenceComplete && (
-            <p>
-              <span>Map veto process completed.&nbsp;</span>
-              <span>Good luck and have fun!</span>
-            </p>
-          )}
+          <p className="p-2">
+            {!!vetoSequenceStep && (
+              <React.Fragment>
+                <span className="loading loading-dots loading-sm"></span>
+                <span>
+                  &nbsp;Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+                </span>
+                <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
+              </React.Fragment>
+            )}
+            {!vetoSequenceComplete && !vetoSequenceStep && (
+              <React.Fragment>
+                <span className="loading loading-dots loading-sm"></span>
+                <span>&nbsp;Randomly picking decider...</span>
+              </React.Fragment>
+            )}
+            {!!vetoSequenceComplete && (
+              <React.Fragment>
+                <span>Map veto process completed.&nbsp;</span>
+                <em>Good luck and have fun!</em>
+              </React.Fragment>
+            )}
+          </p>
           <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
