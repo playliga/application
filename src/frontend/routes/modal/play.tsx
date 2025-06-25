@@ -314,7 +314,7 @@ export default function () {
               <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
             </p>
           )}
-          {vetoPool.length >= match.games.length && <p>Map veto process completed.</p>}
+          {!!vetoSequenceComplete && <p>Map veto process completed.</p>}
           <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
