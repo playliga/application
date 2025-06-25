@@ -308,15 +308,10 @@ export default function () {
       {activeTab === Tab.MAPS && (
         <section className="flex flex-1 flex-col gap-1 overflow-y-scroll">
           {!!vetoSequenceStep && (
-            <React.Fragment>
-              <p>
-                Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
-                <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
-              </p>
-              <p>
-                <em>Tip: Click play and have everything auto-picked for you</em>
-              </p>
-            </React.Fragment>
+            <p>
+              Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+              <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
+            </p>
           )}
           <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
@@ -567,7 +562,10 @@ export default function () {
           </fieldset>
         </form>
       )}
-      <button className="btn btn-xl btn-block btn-primary rounded-none active:translate-0!">
+      <button
+        className="btn btn-xl btn-block btn-primary rounded-none active:translate-0!"
+        disabled={!vetoSequenceComplete}
+      >
         {t('main.dashboard.play')}
       </button>
     </main>
