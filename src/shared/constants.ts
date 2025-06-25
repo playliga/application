@@ -326,6 +326,7 @@ export enum IssueType {
 export enum MapVetoAction {
   BAN = 'ban',
   PICK = 'pick',
+  DECIDER = 'decider',
 }
 
 /**
