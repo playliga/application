@@ -237,7 +237,7 @@ export default function () {
     );
 
     return () => clearTimeout(timeout);
-  }, [vetoSequenceComplete, cpuPool, match]);
+  }, [vetoSequenceComplete, cpuPool, match, vetoPool]);
 
   if (!state.profile || !match) {
     return (
