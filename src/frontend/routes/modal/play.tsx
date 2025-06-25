@@ -193,6 +193,10 @@ export default function () {
     () => !!match && !!cpu && match.competitors.findIndex((competitor) => competitor.id === cpu.id),
     [match, cpu],
   );
+  const cpuPool = React.useMemo(
+    () => Constants.MapPool.filter((mapName) => vetoHistory.every((item) => item.map !== mapName)),
+    [vetoHistory],
+  );
   React.useEffect(() => {
     if (!vetoSequenceStep || vetoSequenceStep.team !== cpuIdx) {
       return;
@@ -200,12 +204,9 @@ export default function () {
 
     setCpuThinking(true);
 
-    const pool = Constants.MapPool.filter((mapName) =>
-      vetoHistory.every((item) => item.map !== mapName),
-    );
     const timeout = setTimeout(
       () => {
-        onVetoSelection(sample(pool));
+        onVetoSelection(sample(cpuPool));
         setCpuThinking(false);
       },
       random(CPU_THINKING_TIME_MIN, CPU_THINKING_TIME_MAX),
@@ -220,12 +221,9 @@ export default function () {
       return;
     }
 
-    const pool = Constants.MapPool.filter((mapName) =>
-      vetoHistory.every((item) => item.map !== mapName),
-    );
     const timeout = setTimeout(
       () => {
-        onVetoSelection(sample(pool));
+        onVetoSelection(sample(cpuPool));
         setCpuThinking(false);
       },
       random(CPU_THINKING_TIME_MIN, CPU_THINKING_TIME_MAX),
