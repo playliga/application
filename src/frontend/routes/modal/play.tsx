@@ -23,7 +23,7 @@ enum Tab {
 
 /** @interface */
 interface MapVetoAction {
-  team: Awaited<ReturnType<typeof api.teams.all>>[number];
+  team?: Awaited<ReturnType<typeof api.teams.all>>[number];
   type: Constants.MapVetoAction;
   map: string;
 }
@@ -42,6 +42,20 @@ const LOCAL_STORAGE_KEY = 'settings';
 
 /** @constants */
 const SETTINGS_DEFAULT = pick(Constants.Settings, ['matchRules']);
+
+/** @constants */
+const DYNAMIC_STYLES = {
+  badge: {
+    [Constants.MapVetoAction.BAN]: 'badge-error',
+    [Constants.MapVetoAction.DECIDER]: 'badge-warning',
+    [Constants.MapVetoAction.PICK]: 'badge-success',
+  },
+  border: {
+    [Constants.MapVetoAction.BAN]: 'border-error shadow-error',
+    [Constants.MapVetoAction.DECIDER]: 'border-warning shadow-warning',
+    [Constants.MapVetoAction.PICK]: 'border-success shadow-success',
+  },
+};
 
 /**
  * Renders an override settings warning.
@@ -150,6 +164,15 @@ export default function () {
 
   // handle map veto selections
   const onVetoSelection = (map: string) => {
+    if (!vetoSequenceStep) {
+      return setVetoHistory([
+        ...vetoHistory,
+        {
+          type: Constants.MapVetoAction.DECIDER,
+          map,
+        },
+      ]);
+    }
     setVetoHistory([
       ...vetoHistory,
       {
@@ -190,6 +213,26 @@ export default function () {
 
     return () => clearTimeout(timeout);
   }, [cpuThinking, vetoSequenceStep, match]);
+
+  // figure out the decider
+  React.useEffect(() => {
+    if (!vetoSequenceComplete) {
+      return;
+    }
+
+    const pool = Constants.MapPool.filter((mapName) =>
+      vetoHistory.every((item) => item.map !== mapName),
+    );
+    const timeout = setTimeout(
+      () => {
+        onVetoSelection(sample(pool));
+        setCpuThinking(false);
+      },
+      random(CPU_THINKING_TIME_MIN, CPU_THINKING_TIME_MAX),
+    );
+
+    return () => clearTimeout(timeout);
+  }, [vetoSequenceComplete]);
 
   if (!state.profile || !match) {
     return (
@@ -291,9 +334,7 @@ export default function () {
                       'h-full border object-cover shadow-md',
                       !picked && !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
                       picked
-                        ? picked.type === Constants.MapVetoAction.PICK
-                          ? 'border-success shadow-success'
-                          : 'border-error shadow-error'
+                        ? DYNAMIC_STYLES.border[picked.type]
                         : 'border-base-content/50 shadow-base-content/50',
                     )}
                   />
@@ -302,14 +343,14 @@ export default function () {
                       <span
                         className={cx(
                           'badge badge-sm absolute top-2 left-1/2 -translate-x-1/2',
-                          picked.type === Constants.MapVetoAction.PICK
-                            ? 'badge-success'
-                            : 'badge-error',
+                          DYNAMIC_STYLES.badge[picked.type],
                         )}
                       >
                         {picked.type.toUpperCase()}
                       </span>
-                      <Image src={picked.team.blazon} className="absolute bottom-0 size-16" />
+                      {!!picked.team && (
+                        <Image src={picked.team.blazon} className="absolute bottom-0 size-16" />
+                      )}
                     </React.Fragment>
                   )}
                 </figure>
