@@ -279,11 +279,11 @@ export default function () {
                     title={Util.convertMapPool(mapName, settingsAll.general.game)}
                     src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
                     onClick={() =>
-                      !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)
+                      !picked && !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)
                     }
                     className={cx(
                       'h-full border object-cover shadow-md',
-                      !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
+                      !picked && !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
                       picked
                         ? picked.type === Constants.MapVetoAction.PICK
                           ? 'border-success shadow-success'
