@@ -274,23 +274,22 @@ export default function () {
               const picked = vetoHistory.find((item) => item.map === mapName);
 
               return (
-                <figure
-                  key={mapName}
-                  onClick={() => !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)}
-                  className={cx(
-                    'relative h-full w-full border shadow-md',
-                    !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
-                    picked
-                      ? picked.type === Constants.MapVetoAction.PICK
-                        ? 'border-success shadow-success'
-                        : 'border-error shadow-error'
-                      : 'border-base-content/50 shadow-base-content/50',
-                  )}
-                >
+                <figure key={mapName} className="relative h-full w-full">
                   <Image
                     title={Util.convertMapPool(mapName, settingsAll.general.game)}
                     src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
-                    className="h-full object-cover"
+                    onClick={() =>
+                      !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)
+                    }
+                    className={cx(
+                      'h-full border object-cover shadow-md',
+                      !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
+                      picked
+                        ? picked.type === Constants.MapVetoAction.PICK
+                          ? 'border-success shadow-success'
+                          : 'border-error shadow-error'
+                        : 'border-base-content/50 shadow-base-content/50',
+                    )}
                   />
                   {!!picked && (
                     <React.Fragment>
