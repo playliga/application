@@ -141,6 +141,13 @@ export default function () {
   const [home, away] = React.useMemo(() => (match ? match.competitors : []), [match]);
 
   // load map veto info
+  const vetoPool = React.useMemo(
+    () =>
+      vetoHistory.filter((item) =>
+        [Constants.MapVetoAction.DECIDER, Constants.MapVetoAction.PICK].includes(item.type),
+      ),
+    [vetoHistory],
+  );
   const vetoSequence = React.useMemo(
     () => (match ? Constants.MapVetoConfig[match.games.length] : []),
     [match],
@@ -152,13 +159,6 @@ export default function () {
   const vetoSequenceComplete = React.useMemo(
     () => vetoHistory.length >= vetoSequence.length,
     [vetoHistory, vetoSequence],
-  );
-  const vetoPool = React.useMemo(
-    () =>
-      vetoHistory.filter((item) =>
-        [Constants.MapVetoAction.DECIDER, Constants.MapVetoAction.PICK].includes(item.type),
-      ),
-    [vetoHistory],
   );
 
   // handle settings updates
