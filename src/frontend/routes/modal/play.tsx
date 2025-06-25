@@ -44,7 +44,7 @@ const LOCAL_STORAGE_KEY = 'settings';
 const SETTINGS_DEFAULT = pick(Constants.Settings, ['matchRules']);
 
 /** @constants */
-const DYNAMIC_STYLES = {
+const VETO_STYLES = {
   badge: {
     [Constants.MapVetoAction.BAN]: 'badge-error',
     [Constants.MapVetoAction.DECIDER]: 'badge-warning',
@@ -334,7 +334,7 @@ export default function () {
                       'h-full border object-cover shadow-md',
                       !picked && !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
                       picked
-                        ? DYNAMIC_STYLES.border[picked.type]
+                        ? VETO_STYLES.border[picked.type]
                         : 'border-base-content/50 shadow-base-content/50',
                     )}
                   />
@@ -343,7 +343,7 @@ export default function () {
                       <span
                         className={cx(
                           'badge badge-sm absolute top-2 left-1/2 -translate-x-1/2',
-                          DYNAMIC_STYLES.badge[picked.type],
+                          VETO_STYLES.badge[picked.type],
                         )}
                       >
                         {picked.type.toUpperCase()}
