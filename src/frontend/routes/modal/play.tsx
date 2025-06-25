@@ -310,11 +310,24 @@ export default function () {
           {!!vetoSequenceStep && (
             <p>
               <span className="loading loading-dots loading-sm"></span>
-              &nbsp;Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+              <span>
+                &nbsp;Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+              </span>
               <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
             </p>
           )}
-          {!!vetoSequenceComplete && <p>Map veto process completed.</p>}
+          {!vetoSequenceComplete && !vetoSequenceStep && (
+            <p>
+              <span className="loading loading-dots loading-sm"></span>
+              <span>&nbsp;Randomly picking decider...</span>
+            </p>
+          )}
+          {!!vetoSequenceComplete && (
+            <p>
+              <span>Map veto process completed.&nbsp;</span>
+              <span>Good luck and have fun!</span>
+            </p>
+          )}
           <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
