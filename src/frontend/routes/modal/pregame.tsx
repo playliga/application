@@ -137,7 +137,15 @@ export default function () {
               ? `${t('shared.matchday')} ${match.round}`
               : Util.parseCupRounds(match.round, match.totalRounds)}
           </li>
-          <li>{Util.convertMapPool(game.map, settingsAll.general.game)}</li>
+          {match.games.length > 1 && (
+            <li>
+              {t('shared.bestOf')}&nbsp;
+              {match.games.length}
+            </li>
+          )}
+          {match.games.length === 1 && (
+            <li>{Util.convertMapPool(game.map, settingsAll.general.game)}</li>
+          )}
         </ul>
       </header>
       <section className="card image-full h-16 rounded-none drop-shadow-md before:rounded-none!">
