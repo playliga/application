@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { cloneDeep, differenceBy, isNull, merge, pick, sample, set } from 'lodash';
+import { cloneDeep, differenceBy, isNull, merge, pick, random, sample, set } from 'lodash';
 import { Constants, Eagers, Util } from '@liga/shared';
 import { cx } from '@liga/frontend/lib';
 import { AppStateContext } from '@liga/frontend/redux';
@@ -32,7 +32,10 @@ interface MapVetoAction {
 type Matches<T = typeof Eagers.match> = Awaited<ReturnType<typeof api.matches.all<T>>>;
 
 /** @constant */
-const CPU_THINKING_TIME = 3000;
+const CPU_THINKING_TIME_MAX = 3000;
+
+/** @constant */
+const CPU_THINKING_TIME_MIN = 1000;
 
 /** @constant */
 const LOCAL_STORAGE_KEY = 'settings';
@@ -177,10 +180,13 @@ export default function () {
     const pool = Constants.MapPool.filter((mapName) =>
       vetoHistory.every((item) => item.map !== mapName),
     );
-    const timeout = setTimeout(() => {
-      onVetoSelection(sample(pool));
-      setCpuThinking(false);
-    }, CPU_THINKING_TIME);
+    const timeout = setTimeout(
+      () => {
+        onVetoSelection(sample(pool));
+        setCpuThinking(false);
+      },
+      random(CPU_THINKING_TIME_MIN, CPU_THINKING_TIME_MAX),
+    );
 
     return () => clearTimeout(timeout);
   }, [cpuThinking, vetoSequenceStep, match]);
