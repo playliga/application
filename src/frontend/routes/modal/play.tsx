@@ -153,8 +153,8 @@ export default function () {
     [match],
   );
   const vetoSequenceComplete = React.useMemo(
-    () => vetoHistory.length >= vetoSequence.length,
-    [vetoHistory, vetoSequence],
+    () => match && vetoPool.length >= match.games.length,
+    [match, vetoHistory, vetoSequence],
   );
   const vetoSequenceStep = React.useMemo(
     () => vetoSequence[vetoHistory.length],
@@ -224,7 +224,7 @@ export default function () {
 
   // figure out the decider
   React.useEffect(() => {
-    if (!match || !vetoSequenceComplete || vetoPool.length >= match.games.length) {
+    if (!match || vetoSequenceComplete || vetoSequenceStep) {
       return;
     }
 
@@ -237,7 +237,7 @@ export default function () {
     );
 
     return () => clearTimeout(timeout);
-  }, [vetoSequenceComplete, cpuPool, match, vetoPool]);
+  }, [cpuPool, match, vetoSequenceComplete, vetoSequenceStep]);
 
   if (!state.profile || !match) {
     return (
@@ -309,10 +309,12 @@ export default function () {
         <section className="flex flex-1 flex-col gap-1 overflow-y-scroll">
           {!!vetoSequenceStep && (
             <p>
-              Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
+              <span className="loading loading-dots loading-sm"></span>
+              &nbsp;Waiting on {match.competitors[vetoSequenceStep.team].team.name} to&nbsp;
               <strong>{vetoSequenceStep.type.toUpperCase()}</strong> a map...
             </p>
           )}
+          {vetoPool.length >= match.games.length && <p>Map veto process completed.</p>}
           <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
