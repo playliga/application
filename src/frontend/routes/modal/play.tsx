@@ -347,7 +347,7 @@ export default function () {
                     <React.Fragment>
                       <span
                         className={cx(
-                          'badge badge-sm absolute top-2 left-1/2 -translate-x-1/2',
+                          'badge badge-xs absolute top-2 left-1/2 -translate-x-1/2',
                           VETO_STYLES.badge[picked.type],
                         )}
                       >
