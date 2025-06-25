@@ -271,7 +271,7 @@ export default function () {
             }}
           >
             {Constants.MapPool.map((mapName) => {
-              const found = vetoHistory.find((item) => item.map === mapName);
+              const picked = vetoHistory.find((item) => item.map === mapName);
 
               return (
                 <figure
@@ -280,8 +280,8 @@ export default function () {
                   className={cx(
                     'relative h-full w-full border shadow-md',
                     !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
-                    found
-                      ? found.type === Constants.MapVetoAction.PICK
+                    picked
+                      ? picked.type === Constants.MapVetoAction.PICK
                         ? 'border-success shadow-success'
                         : 'border-error shadow-error'
                       : 'border-base-content/50 shadow-base-content/50',
@@ -292,19 +292,19 @@ export default function () {
                     src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
                     className="h-full object-cover"
                   />
-                  {!!found && (
+                  {!!picked && (
                     <React.Fragment>
                       <span
                         className={cx(
                           'badge badge-sm absolute top-2 left-1/2 -translate-x-1/2',
-                          found.type === Constants.MapVetoAction.PICK
+                          picked.type === Constants.MapVetoAction.PICK
                             ? 'badge-success'
                             : 'badge-error',
                         )}
                       >
-                        {found.type.toUpperCase()}
+                        {picked.type.toUpperCase()}
                       </span>
-                      <Image src={found.team.blazon} className="absolute bottom-0 size-16" />
+                      <Image src={picked.team.blazon} className="absolute bottom-0 size-16" />
                     </React.Fragment>
                   )}
                 </figure>
