@@ -270,6 +270,18 @@ export default function () {
               </p>
             </React.Fragment>
           )}
+          {!!vetoSequenceComplete && (
+            <React.Fragment>
+              <p>Randomly picking decider...</p>
+              <p>
+                Map pool:&nbsp;
+                {vetoHistory
+                  .filter((item) => item.type === Constants.MapVetoAction.PICK)
+                  .map((item) => item.map)
+                  .join(', ')}
+              </p>
+            </React.Fragment>
+          )}
           <article
             className="grid h-full flex-1 grid-cols-11 gap-2"
             style={{
