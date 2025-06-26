@@ -583,10 +583,10 @@ export default function () {
         </form>
       )}
       <button
-        className="btn btn-xl btn-block btn-primary rounded-none active:translate-0!"
+        className="btn btn-xl btn-block btn-secondary rounded-none active:translate-0!"
         disabled={!vetoSequenceComplete}
       >
-        {t('main.dashboard.play')}
+        {t('play.launch')}
       </button>
     </main>
   );

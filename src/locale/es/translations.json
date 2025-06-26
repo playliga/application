@@ -191,6 +191,7 @@
       "version": "Versión"
     },
     "play": {
+      "launch": "Launch",
       "matchRules": "Reglas del Partido"
     },
     "postgame": {
