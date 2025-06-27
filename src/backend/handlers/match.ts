@@ -3,8 +3,9 @@
  *
  * @module
  */
+import Tournament from '@liga/shared/tournament';
 import { ipcMain } from 'electron';
-import { Constants } from '@liga/shared';
+import { Constants, Eagers } from '@liga/shared';
 import { DatabaseClient } from '@liga/backend/lib';
 import { Prisma } from '@prisma/client';
 
@@ -14,6 +15,34 @@ import { Prisma } from '@prisma/client';
  * @function
  */
 export default function () {
+  ipcMain.handle(
+    Constants.IPCRoute.MATCH_UPDATE_MAP_LIST,
+    async (_, id: number, maps: Array<string>) => {
+      const match = await DatabaseClient.prisma.match.findFirst({
+        ...Eagers.match,
+        where: { id },
+      });
+
+      // update the tourney object metadata with the map list
+      const tournament = Tournament.restore(JSON.parse(match.competition.tournament));
+      tournament.$base.findMatch(JSON.parse(match.payload)).data['maps'] = maps;
+
+      // update the match database record with the map list
+      return DatabaseClient.prisma.match.update({
+        where: { id },
+        data: {
+          games: {
+            update: match.games.map((game, gameIdx) => ({
+              where: { id: game.id },
+              data: {
+                map: maps[gameIdx],
+              },
+            })),
+          },
+        },
+      });
+    },
+  );
   ipcMain.handle(Constants.IPCRoute.MATCHES_ALL, (_, query: Prisma.MatchFindManyArgs) =>
     DatabaseClient.prisma.match.findMany(query),
   );

@@ -122,6 +122,10 @@ export default {
     find: (id: number) =>
       ipcRenderer.invoke(Constants.IPCRoute.ISSUES_FIND, id) as Promise<GitHubIssueResponse>,
   },
+  match: {
+    updateMapList: (id: number, mapList: Array<string>) =>
+      ipcRenderer.invoke(Constants.IPCRoute.MATCH_UPDATE_MAP_LIST, id, mapList) as Promise<unknown>,
+  },
   matches: {
     all: <T = typeof Eagers.match>(query: Prisma.MatchFindManyArgs) =>
       ipcRenderer.invoke(Constants.IPCRoute.MATCHES_ALL, query) as Promise<

@@ -257,6 +257,7 @@ export enum IPCRoute {
   ISSUES_COMMENTS = '/issues/comments',
   ISSUES_COMMENTS_CREATE = '/issues/comments/create',
   ISSUES_FIND = '/issues/find',
+  MATCH_UPDATE_MAP_LIST = '/match/update/map-list',
   MATCHES_ALL = '/matches/all',
   MATCHES_COUNT = '/matches/count',
   MATCHES_PREVIOUS = '/matches/previous',

@@ -87,13 +87,13 @@ export default function () {
   const t = useTranslation('windows');
   const { state } = React.useContext(AppStateContext);
   const [activeTab, setActiveTab] = React.useState<Tab>(Tab.MAPS);
-  const [cpuThinking, setCpuThinking] = React.useState(false);
   const [match, setMatch] = React.useState<Matches[number]>();
   const [settings, setSettings] = React.useState(SETTINGS_DEFAULT);
   const [userSquad, setUserSquad] = React.useState<
     Awaited<ReturnType<typeof api.squad.all<typeof Eagers.player>>>
   >([]);
   const [vetoHistory, setVetoHistory] = React.useState<Array<MapVetoAction>>([]);
+  const [working, setWorking] = React.useState(false);
 
   // we only want to maintain and override specific settings
   // and not copy/merge with the whole object
@@ -141,7 +141,7 @@ export default function () {
   const [home, away] = React.useMemo(() => (match ? match.competitors : []), [match]);
 
   // load map veto info
-  const vetoPool = React.useMemo(
+  const vetoMapList = React.useMemo(
     () =>
       vetoHistory.filter((item) =>
         [Constants.MapVetoAction.DECIDER, Constants.MapVetoAction.PICK].includes(item.type),
@@ -153,7 +153,7 @@ export default function () {
     [match],
   );
   const vetoSequenceComplete = React.useMemo(
-    () => match && vetoPool.length >= match.games.length,
+    () => match && vetoMapList.length >= match.games.length,
     [match, vetoHistory, vetoSequence],
   );
   const vetoSequenceStep = React.useMemo(
@@ -209,12 +209,12 @@ export default function () {
       return;
     }
 
-    setCpuThinking(true);
+    setWorking(true);
 
     const timeout = setTimeout(
       () => {
         onVetoSelection(sample(cpuPool));
-        setCpuThinking(false);
+        setWorking(false);
       },
       random(CPU_THINKING_TIME_MIN, CPU_THINKING_TIME_MAX),
     );
@@ -231,7 +231,7 @@ export default function () {
     const timeout = setTimeout(
       () => {
         onVetoSelection(sample(cpuPool));
-        setCpuThinking(false);
+        setWorking(false);
       },
       random(CPU_THINKING_TIME_MIN, CPU_THINKING_TIME_MAX),
     );
@@ -348,11 +348,11 @@ export default function () {
                     title={Util.convertMapPool(mapName, settingsAll.general.game)}
                     src={Util.convertMapPool(mapName, settingsAll.general.game, true)}
                     onClick={() =>
-                      !picked && !vetoSequenceComplete && !cpuThinking && onVetoSelection(mapName)
+                      !picked && !vetoSequenceComplete && !working && onVetoSelection(mapName)
                     }
                     className={cx(
                       'h-full border object-cover shadow-md',
-                      !picked && !vetoSequenceComplete && !cpuThinking && 'cursor-pointer',
+                      !picked && !vetoSequenceComplete && !working && 'cursor-pointer',
                       picked
                         ? VETO_STYLES.border[picked.type]
                         : 'border-base-content/50 shadow-base-content/50',
@@ -585,6 +585,19 @@ export default function () {
       <button
         className="btn btn-xl btn-block btn-secondary rounded-none active:translate-0!"
         disabled={!vetoSequenceComplete}
+        onClick={() => {
+          setWorking(true);
+
+          console.log(match.id);
+          console.log(vetoMapList.map((item) => item.map));
+
+          api.match
+            .updateMapList(
+              match.id,
+              vetoMapList.map((item) => item.map),
+            )
+            .then(() => setWorking(false));
+        }}
       >
         {t('play.launch')}
       </button>
