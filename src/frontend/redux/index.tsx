@@ -28,7 +28,17 @@ export const AppStateContext = React.createContext<{
  * @function
  */
 export function AppStateProvider(props: { children: React.ReactNode }) {
-  const [state, dispatch] = React.useReducer(reducers, InitialState);
+  const [state, dispatchBase] = React.useReducer(reducers, InitialState);
+
+  // add thunk support
+  const dispatch: AppDispatch = React.useMemo(() => {
+    return (action) => {
+      if (typeof action === 'function') {
+        return action(dispatch);
+      }
+      return dispatchBase(action);
+    };
+  }, [dispatchBase]);
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>

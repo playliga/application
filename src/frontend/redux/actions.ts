@@ -3,7 +3,8 @@
  *
  * @module
  */
-import { AppState } from './state';
+import { Util } from '@liga/shared';
+import { AppDispatch, AppState } from './state';
 
 /** @enum */
 export enum ReduxActions {
@@ -13,6 +14,7 @@ export enum ReduxActions {
   EMAILS_UPDATE,
   EMAILS_DELETE,
   LOCALE_UPDATE,
+  PLAYING_UPDATE,
   PROFILE_UPDATE,
   PROFILES_DELETE,
   PROFILES_UPDATE,
@@ -90,6 +92,17 @@ export function localeUpdate(payload: AppState['locale']) {
  * @param payload The redux payload.
  * @function
  */
+export function playingUpdate(payload: AppState['playing']) {
+  return {
+    type: ReduxActions.PLAYING_UPDATE,
+    payload,
+  };
+}
+
+/**
+ * @param payload The redux payload.
+ * @function
+ */
 export function profileUpdate(payload: AppState['profile']) {
   return {
     type: ReduxActions.PROFILE_UPDATE,
@@ -138,5 +151,20 @@ export function workingUpdate(payload: AppState['working']) {
   return {
     type: ReduxActions.WORKING_UPDATE,
     payload,
+  };
+}
+
+/**
+ * @function
+ */
+export function play() {
+  return async (dispatch: AppDispatch) => {
+    dispatch(playingUpdate(true));
+    await Util.sleep(1000);
+    await api.play.start();
+    dispatch(workingUpdate(true));
+    await api.calendar.start(1);
+    dispatch(workingUpdate(false));
+    dispatch(playingUpdate(false));
   };
 }

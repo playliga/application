@@ -8,7 +8,7 @@ import { addDays, format } from 'date-fns';
 import { Constants, Eagers, Util } from '@liga/shared';
 import { cx } from '@liga/frontend/lib';
 import { AppStateContext } from '@liga/frontend/redux';
-import { workingUpdate } from '@liga/frontend/redux/actions';
+import { play, workingUpdate } from '@liga/frontend/redux/actions';
 import { useTranslation } from '@liga/frontend/hooks';
 import { Standings, Image, Historial } from '@liga/frontend/components';
 import {
@@ -27,9 +27,6 @@ import {
 interface StatusBannerProps {
   error: string;
 }
-
-/** @constant */
-const GAME_LAUNCH_DELAY = 1000;
 
 /** @constant */
 const NUM_UPCOMING = 5 + 1; // adds an extra for "next match"
@@ -112,7 +109,6 @@ export function StatusBanner(props: StatusBannerProps) {
 export default function () {
   const t = useTranslation('windows');
   const { state, dispatch } = React.useContext(AppStateContext);
-  const [playing, setPlaying] = React.useState(false);
   const [settings, setSettings] = React.useState(Constants.Settings);
   const [upcoming, setUpcoming] = React.useState<
     Awaited<ReturnType<typeof api.matches.upcoming<typeof Eagers.match>>>
@@ -220,7 +216,7 @@ export default function () {
   return (
     <div className="dashboard">
       {/** PLAYING MODAL */}
-      <dialog className={cx('modal', playing && 'modal-open')}>
+      <dialog className={cx('modal', state.playing && 'modal-open')}>
         <section className="modal-box">
           <h3 className="text-lg">{t('main.dashboard.playingMatchTitle')}</h3>
           <p className="py-4">{t('main.dashboard.playingMatchSubtitle')}</p>
@@ -585,11 +581,7 @@ export default function () {
                             payload: spotlight.id,
                           });
                         }
-                        setPlaying(true);
-                        Util.sleep(GAME_LAUNCH_DELAY)
-                          .then(api.play.start)
-                          .then(() => startEngineLoop(1))
-                          .then(() => setPlaying(false));
+                        dispatch(play());
                       }}
                     >
                       {t('main.dashboard.play')}
@@ -605,13 +597,7 @@ export default function () {
                       title={t('main.dashboard.spectateMatch')}
                       className="btn btn-secondary join-item"
                       disabled={disabled || !!state.appStatus}
-                      onClick={() => {
-                        setPlaying(true);
-                        Util.sleep(GAME_LAUNCH_DELAY)
-                          .then(() => api.play.start(true))
-                          .then(() => startEngineLoop(1))
-                          .then(() => setPlaying(false));
-                      }}
+                      onClick={() => dispatch(play())}
                     >
                       <FaTv />
                     </button>

@@ -100,6 +100,23 @@ function locale(state: typeof InitialState.locale, action: AppAction<typeof Init
  * @param action Redux action.
  * @function
  */
+function playing(
+  state: typeof InitialState.playing,
+  action: AppAction<typeof InitialState.playing>,
+) {
+  switch (action.type) {
+    case ReduxActions.PLAYING_UPDATE:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
+/**
+ * @param state Application state.
+ * @param action Redux action.
+ * @function
+ */
 function profile(
   state: typeof InitialState.profile,
   action: AppAction<typeof InitialState.profile>,
@@ -183,6 +200,7 @@ export default function (state: AppState, action: AppActions) {
     continents: continents(state.continents, action as AppAction<typeof state.continents>),
     emails: emails(state.emails, action as AppAction<typeof state.emails>),
     locale: locale(state.locale, action as AppAction<typeof state.locale>),
+    playing: playing(state.playing, action as AppAction<typeof state.playing>),
     profile: profile(state.profile, action as AppAction<typeof state.profile>),
     profiles: profiles(state.profiles, action as AppAction<typeof state.profiles>),
     windowData: windowData(state.windowData, action as AppAction<typeof state.windowData>),
