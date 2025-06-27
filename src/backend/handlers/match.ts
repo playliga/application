@@ -31,6 +31,11 @@ export default function () {
       return DatabaseClient.prisma.match.update({
         where: { id },
         data: {
+          competition: {
+            update: {
+              tournament: JSON.stringify(tournament.save()),
+            },
+          },
           games: {
             update: match.games.map((game, gameIdx) => ({
               where: { id: game.id },
