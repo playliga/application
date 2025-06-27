@@ -155,6 +155,8 @@ export function workingUpdate(payload: AppState['working']) {
 }
 
 /**
+ * Thunk that starts the game server.
+ *
  * @function
  */
 export function play() {
