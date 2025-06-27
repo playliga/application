@@ -588,9 +588,6 @@ export default function () {
         onClick={() => {
           setWorking(true);
 
-          console.log(match.id);
-          console.log(vetoMapList.map((item) => item.map));
-
           api.match
             .updateMapList(
               match.id,
