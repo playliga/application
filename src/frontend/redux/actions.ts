@@ -155,7 +155,21 @@ export function workingUpdate(payload: AppState['working']) {
 }
 
 /**
- * Thunk that starts the game server.
+ * Thunk action that advances the calendar.
+ *
+ * @param days The number of days to advance.
+ * @function
+ */
+export function calendarAdvance(days?: number) {
+  return async (dispatch: AppDispatch) => {
+    dispatch(workingUpdate(true));
+    await api.calendar.start(days);
+    dispatch(workingUpdate(false));
+  };
+}
+
+/**
+ * Thunk action that starts the game server.
  *
  * @function
  */
@@ -164,9 +178,7 @@ export function play() {
     dispatch(playingUpdate(true));
     await Util.sleep(1000);
     await api.play.start();
-    dispatch(workingUpdate(true));
-    await api.calendar.start(1);
-    dispatch(workingUpdate(false));
+    dispatch(calendarAdvance(1));
     dispatch(playingUpdate(false));
   };
 }

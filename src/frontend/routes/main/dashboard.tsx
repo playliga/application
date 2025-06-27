@@ -8,7 +8,7 @@ import { addDays, format } from 'date-fns';
 import { Constants, Eagers, Util } from '@liga/shared';
 import { cx } from '@liga/frontend/lib';
 import { AppStateContext } from '@liga/frontend/redux';
-import { play, workingUpdate } from '@liga/frontend/redux/actions';
+import { calendarAdvance, play } from '@liga/frontend/redux/actions';
 import { useTranslation } from '@liga/frontend/hooks';
 import { Standings, Image, Historial } from '@liga/frontend/components';
 import {
@@ -205,14 +205,6 @@ export default function () {
     [standings, userTeam],
   );
 
-  // start the engine loop
-  const startEngineLoop = async (days?: number) => {
-    dispatch(workingUpdate(true));
-    await api.calendar.start(days);
-    dispatch(workingUpdate(false));
-    return Promise.resolve();
-  };
-
   return (
     <div className="dashboard">
       {/** PLAYING MODAL */}
@@ -401,7 +393,7 @@ export default function () {
               title={t('main.dashboard.advanceCalendar')}
               className="day day-btn border-t-0"
               disabled={!state.profile || state.working || isMatchday}
-              onClick={() => !state.working && !isMatchday && startEngineLoop()}
+              onClick={() => !state.working && !isMatchday && dispatch(calendarAdvance())}
             >
               <figure>
                 <FaForward />
@@ -589,7 +581,7 @@ export default function () {
                     <button
                       className="btn join-item btn-wide"
                       disabled={disabled}
-                      onClick={() => api.calendar.sim().then(() => startEngineLoop(1))}
+                      onClick={() => api.calendar.sim().then(() => dispatch(calendarAdvance(1)))}
                     >
                       {t('main.dashboard.simulate')}
                     </button>
