@@ -19,6 +19,7 @@ import {
   profileUpdate,
   appStatusUpdate,
   localeUpdate,
+  play,
 } from '@liga/frontend/redux/actions';
 import {
   createMemoryRouter,
@@ -188,6 +189,9 @@ function Root() {
 
     // handle awards
     api.ipc.on(Constants.IPCRoute.CONFETTI_START, Confetti.start);
+
+    // handle play events
+    api.ipc.on(Constants.IPCRoute.WINDOW_SEND, () => dispatch(play()));
 
     // setup app status heartbeat
     const heartbeat = setInterval(
