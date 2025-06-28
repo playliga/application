@@ -66,7 +66,7 @@ export default function () {
     // game over; collect postgame info
     const [homeScore, awayScore] = gameServer.result.score;
     const [home, away] = match.competitors;
-    const finalScore = {
+    const gameScore = {
       [home.id]: homeScore,
       [away.id]: awayScore,
     };
@@ -93,8 +93,8 @@ export default function () {
           update: match.competitors.map((competitor) => ({
             where: { id: competitor.id },
             data: {
-              score: finalScore[competitor.id],
-              result: Simulator.getMatchResult(competitor.id, finalScore),
+              score: gameScore[competitor.id],
+              result: Simulator.getMatchResult(competitor.id, gameScore),
             },
           })),
         },
@@ -174,7 +174,7 @@ export default function () {
 
     // give training boosts to squad if they won
     const userTeam = match.competitors.find((competitor) => competitor.teamId === profile.teamId);
-    const matchResult = Simulator.getMatchResult(userTeam.id, finalScore);
+    const matchResult = Simulator.getMatchResult(userTeam.id, gameScore);
 
     if (matchResult === Constants.MatchResult.WIN) {
       const bonuses = [

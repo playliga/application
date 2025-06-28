@@ -261,6 +261,7 @@ export class Server {
   private gameDir: string;
   private gameClientProcess: ChildProcessWithoutNullStreams;
   private match: Prisma.MatchGetPayload<typeof Eagers.match>;
+  private matchGame: Server['match']['games'][number];
   private motdTxtFile: string;
   private motdHTMLFile: string;
   private profile: Profile;
@@ -304,6 +305,7 @@ export class Server {
     // set up plain properties
     this.log = log.scope('gameserver');
     this.match = match;
+    this.matchGame = match.games.find((game) => game.status !== Constants.MatchStatus.COMPLETED);
     this.profile = profile;
     this.settings = Util.loadSettings(profile.settings);
     this.scorebotEvents = [];
@@ -397,8 +399,7 @@ export class Server {
    * @function
    */
   private get map() {
-    const [game1] = this.match.games;
-    return this.settings.matchRules.mapOverride || game1.map;
+    return this.settings.matchRules.mapOverride || this.matchGame.map;
   }
 
   /**
