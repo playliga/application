@@ -116,6 +116,11 @@ export default function () {
   const [matchHistorial, setMatchHistorial] = React.useState<Array<typeof upcoming>>([[], []]);
   const [previous, setPrevious] = React.useState<typeof upcoming>([]);
 
+  // listen for play events
+  React.useEffect(() => {
+    api.ipc.on(Constants.IPCRoute.WINDOW_SEND, () => dispatch(play()));
+  }, []);
+
   // load settings
   React.useEffect(() => {
     if (!state.profile) {

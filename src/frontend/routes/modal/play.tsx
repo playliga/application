@@ -593,7 +593,11 @@ export default function () {
               match.id,
               vetoMapList.map((item) => item.map),
             )
-            .then(() => setWorking(false));
+            .then(() => {
+              setWorking(false);
+              api.window.send(Constants.WindowIdentifier.Main, null, null);
+              api.window.close(Constants.WindowIdentifier.Modal);
+            });
         }}
       >
         {t('play.launch')}
