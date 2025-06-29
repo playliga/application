@@ -183,12 +183,10 @@ async function createMatchdays(
       // if there's an existing matchday record then we only need
       // update its status and add competitors if necessary
       const existingMatch = await DatabaseClient.prisma.match.findFirst({
+        ...Eagers.match,
         where: {
           payload: JSON.stringify(match.id),
           competitionId: Number(competition.id),
-        },
-        include: {
-          competitors: true,
         },
       });
 
@@ -218,6 +216,16 @@ async function createMatchdays(
               status,
               competitors: {
                 create: differenceBy(competitors, existingMatch.competitors, 'teamId'),
+              },
+              games: {
+                update: existingMatch.games.map((game) => ({
+                  where: { id: game.id },
+                  data: {
+                    teams: {
+                      create: differenceBy(competitors, existingMatch.competitors, 'teamId'),
+                    },
+                  },
+                })),
               },
             },
           }),
