@@ -70,7 +70,22 @@ export default function () {
       [home.id]: homeScore,
       [away.id]: awayScore,
     };
-    const players = flatten(gameServer.competitors.map((competitor) => competitor.team.players));
+    const globalScore = {
+      [home.id]:
+        match.games.length > 1
+          ? home.score +
+            Number(Simulator.getMatchResult(home.id, gameScore) === Constants.MatchResult.WIN)
+          : gameScore[home.id],
+      [away.id]:
+        match.games.length > 1
+          ? away.score +
+            Number(Simulator.getMatchResult(away.id, gameScore) === Constants.MatchResult.WIN)
+          : gameScore[away.id],
+    };
+
+    // did a team win the match?
+    const winsToClinch = Math.floor(match.games.length / 2) + 1;
+    const matchCompleted = Object.values(globalScore).some((score) => score >= winsToClinch);
 
     // clean up on-the-fly settings
     if (settingsLocalStorage) {
@@ -82,19 +97,22 @@ export default function () {
     }
 
     // add the user's team back into the mix
+    const players = flatten(gameServer.competitors.map((competitor) => competitor.team.players));
     players.push(profile.player);
 
     // update the match record and create the match events database entries
     await DatabaseClient.prisma.match.update({
       where: { id: match.id },
       data: {
-        status: Constants.MatchStatus.COMPLETED,
+        status: matchCompleted ? Constants.MatchStatus.COMPLETED : match.status,
         competitors: {
           update: match.competitors.map((competitor) => ({
             where: { id: competitor.id },
             data: {
-              score: gameScore[competitor.id],
-              result: Simulator.getMatchResult(competitor.id, gameScore),
+              score: globalScore[competitor.id],
+              result: matchCompleted
+                ? Simulator.getMatchResult(competitor.id, globalScore)
+                : competitor.result,
             },
           })),
         },
@@ -174,7 +192,7 @@ export default function () {
 
     // give training boosts to squad if they won
     const userTeam = match.competitors.find((competitor) => competitor.teamId === profile.teamId);
-    const matchResult = Simulator.getMatchResult(userTeam.id, gameScore);
+    const matchResult = Simulator.getMatchResult(userTeam.id, globalScore);
 
     if (matchResult === Constants.MatchResult.WIN) {
       const bonuses = [
