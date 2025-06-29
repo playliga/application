@@ -46,20 +46,14 @@ export default function () {
                 // to the current game in the series
                 //
                 // @todo: remove after beta
-                ...(async () => {
-                  const missingTeams = differenceBy(match.competitors, game.teams, 'teamId');
-
-                  if (!missingTeams.length) {
-                    return {};
-                  }
-
-                  return {
-                    create: missingTeams.map((missingTeam) => ({
-                      seed: missingTeam.seed,
-                      teamId: missingTeam.teamId,
-                    })),
-                  };
-                })(),
+                teams: {
+                  create: differenceBy(match.competitors, game.teams, 'teamId').map(
+                    (competitor) => ({
+                      teamId: competitor.teamId,
+                      seed: competitor.seed,
+                    }),
+                  ),
+                },
               },
             })),
           },
