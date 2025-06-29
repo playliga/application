@@ -5,6 +5,7 @@
  */
 import Tournament from '@liga/shared/tournament';
 import { ipcMain } from 'electron';
+import { differenceBy } from 'lodash';
 import { Constants, Eagers } from '@liga/shared';
 import { DatabaseClient } from '@liga/backend/lib';
 import { Prisma } from '@prisma/client';
@@ -41,6 +42,24 @@ export default function () {
               where: { id: game.id },
               data: {
                 map: maps[gameIdx],
+                // ensure competitors have been added
+                // to the current game in the series
+                //
+                // @todo: remove after beta
+                ...(async () => {
+                  const missingTeams = differenceBy(match.competitors, game.teams, 'teamId');
+
+                  if (!missingTeams.length) {
+                    return {};
+                  }
+
+                  return {
+                    create: missingTeams.map((missingTeam) => ({
+                      seed: missingTeam.seed,
+                      teamId: missingTeam.teamId,
+                    })),
+                  };
+                })(),
               },
             })),
           },

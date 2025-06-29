@@ -58,7 +58,15 @@ export const match = {
         },
       },
     },
-    games: true,
+    games: {
+      include: {
+        teams: {
+          include: {
+            team: true,
+          },
+        },
+      },
+    },
   },
 };
 
