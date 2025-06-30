@@ -569,7 +569,10 @@ export default function () {
                       onClick={() => {
                         if (spotlight.games.length > 1) {
                           return api.window.send<ModalRequest>(Constants.WindowIdentifier.Modal, {
-                            target: '/play',
+                            target:
+                              spotlight.status === Constants.MatchStatus.PLAYING
+                                ? '/postgame'
+                                : '/play',
                             payload: spotlight.id,
                           });
                         }

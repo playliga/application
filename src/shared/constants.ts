@@ -358,6 +358,9 @@ export enum MatchStatus {
 
   // the match is completed
   COMPLETED,
+
+  // the match is being played
+  PLAYING,
 }
 
 /**
