@@ -37,6 +37,7 @@ export default function () {
       },
       include: Eagers.match.include,
     });
+    const winsToClinch = Math.floor(match.games.length / 2) + 1;
 
     // minimize main window
     const mainWindow = WindowManager.get(Constants.WindowIdentifier.Main);
@@ -82,21 +83,10 @@ export default function () {
             Number(Simulator.getMatchResult(away.id, gameScore) === Constants.MatchResult.WIN)
           : gameScore[away.id],
     };
-
-    // did a team win the match?
-    const winsToClinch = Math.floor(match.games.length / 2) + 1;
     const matchCompleted = Object.values(globalScore).some((score) => score >= winsToClinch);
 
-    // clean up on-the-fly settings
-    if (settingsLocalStorage) {
-      try {
-        await mainWindow.webContents.executeJavaScript('localStorage.removeItem("settings");');
-      } catch (_) {
-        log.warn('Could not remove on-the-fly settings.');
-      }
-    }
-
-    // add the user's team back into the mix
+    // add the user back into the list of players
+    // to record match events properly
     const players = flatten(gameServer.competitors.map((competitor) => competitor.team.players));
     players.push(profile.player);
 
@@ -190,6 +180,24 @@ export default function () {
       },
     });
 
+    // bail early if match isn't completed yet
+    if (!matchCompleted) {
+      mainWindow.restore();
+      return WindowManager.send(Constants.WindowIdentifier.Modal, {
+        target: '/postgame',
+        payload: match.id,
+      });
+    }
+
+    // clean up on-the-fly settings
+    if (settingsLocalStorage) {
+      try {
+        await mainWindow.webContents.executeJavaScript('localStorage.removeItem("settings");');
+      } catch (_) {
+        log.warn('Could not remove on-the-fly settings.');
+      }
+    }
+
     // give training boosts to squad if they won
     const userTeam = match.competitors.find((competitor) => competitor.teamId === profile.teamId);
     const matchResult = Simulator.getMatchResult(userTeam.id, globalScore);
@@ -224,7 +232,5 @@ export default function () {
       target: '/postgame',
       payload: match.id,
     });
-
-    return Promise.resolve();
   });
 }
